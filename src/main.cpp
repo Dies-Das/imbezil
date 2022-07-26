@@ -1,70 +1,38 @@
 
 #include "opencv4/opencv2/opencv.hpp"
 #include "Shape.hpp"
+#include "argparse.hpp"
 #include <omp.h>
-#include <pagmo/problem.hpp>
-#include <pagmo/types.hpp>
-#include <pagmo/algorithm.hpp>
 
-#include <pagmo/algorithms/simulated_annealing.hpp>
-#include <pagmo/algorithms/bee_colony.hpp>
-#include <pagmo/algorithms/pso.hpp>
-#include <pagmo/algorithms/sade.hpp>
-#include <pagmo/algorithms/gaco.hpp>
-
-#include <pagmo/archipelago.hpp>
-#include <pagmo/population.hpp>
 #include <cmath>
 #include <initializer_list>
-#include <pagmo/archipelago.hpp>
+
 #include <iostream>
 #include <cstdlib>
 #include <utility>
 #define THREAD_NUM 16
 using namespace cv;
-using namespace pagmo;
-struct problem_v0
-{
-    Mat target;
-    Mat current;
-    vector_double fitness(const vector_double &dv) const
-    {
 
-        Mat current2;
-        Mat overlay;
-        double alpha = 0.5;
-        Point2d P1(dv[0], dv[1]);
-        Point2d P2(dv[2], dv[3]);
-        Mat selection(target, Rect(P1, P2));
-                Scalar col(mean(selection));
-        //Scalar col(dv[4], dv[5], dv[6]);
-        current.copyTo(current2);
-        current.copyTo(overlay);
-        rectangle(overlay, P1, P2, col, FILLED);
-        addWeighted(overlay, alpha, current2, 1 - alpha, 0, current2);
-        return {norm(target - current2)};
-    }
-    std::pair<vector_double, vector_double> get_bounds() const
-    {
-        auto a = target.size;
-        double x = a[0];
-        double y = a[1];
-        return {{0., 0., 0., 0.}, {x, y, x, y}};
-    }
+struct MyArgs : public argparse::Args {
+    std::string &src_path = arg("Input image");
+    int &n                = kwarg("n", "Number of parallel Shape insertions").set_default(16);
+    int &m          = kwarg("m", "Number of candidate Shapes ").set_default(2000);
+    int &iter = kwarg("k", "Number of iterations").set_default(200);
+    std::string &o = kwarg("o", "output file path").set_default("out.png");
 };
 
-int main()
+int main(int argc, char* argv[])
 {
-    omp_set_num_threads(THREAD_NUM);
+    MyArgs args = argparse::parse<MyArgs>(argc, argv);
+    omp_set_num_threads(args.n);
     std::random_device rd{};
     std::mt19937 gen{rd()};
     std::normal_distribution<> nor(0, 4);
     std::uniform_int_distribution<> newcoord(0,256);
-    int threads = 16;
-    double alpha = 0.5;
+    int threads = args.n;
     Mat image, image2, origimage;
-    origimage = imread("../testtest.png");
-    auto orig_size = origimage.size;
+    origimage = imread(args.src_path);
+
     resize(origimage,image,Size(256, 256));
     image.copyTo(image2);
     namedWindow("Display Image", WINDOW_AUTOSIZE);
@@ -73,18 +41,17 @@ int main()
     image2.setTo(Scalar(avg));
     std::vector<Rectangle> rects;
     std::vector<Rectangle> tries;
-    auto comparison = [&](Rectangle &a, Rectangle &b){return a.fitness < b.fitness;};
-    int iter = 0;
-    for(int k=0; k<5000; k++){
+   int iter = 0;
+    for(int k=0; k<args.m; k++){
         
         tries.push_back(Rectangle(rd, image, image2));
     }
-    std::sort(std::begin(tries),std::end(tries),comparison);
+    std::sort(std::begin(tries),std::end(tries));
     for(int k=0; k<threads; k++){
         rects.push_back(tries[k]);
 
     }
-    for (int j=0; j<200; j++){
+    for (int j=0; j<args.iter; j++){
         iter++;
     
     #pragma omp parallel for
@@ -97,10 +64,10 @@ int main()
 //    #pragma omp parallel
     {
         #pragma omp parallel for
-    for(int k=0; k<5000; k++){
+    for(int k=0; k<args.m; k++){
         tries[k].randomize();
     }
-    std::sort(std::begin(tries),std::end(tries),comparison);
+    std::sort(std::begin(tries),std::end(tries));
     for(auto rec :tries){
         
     }

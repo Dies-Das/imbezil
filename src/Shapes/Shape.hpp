@@ -13,6 +13,12 @@ class Shape{
     virtual void undo() = 0;
     virtual void mutate() = 0;
     void optimize();
+    inline friend bool operator<(const Shape& l, const Shape& r){
+        return l.fitness < r.fitness;
+    }
+    inline friend bool operator>(const Shape& l, const Shape& r){
+        return r<l;
+    }
 };
 
 
