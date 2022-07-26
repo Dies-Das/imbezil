@@ -6,20 +6,21 @@
 using namespace cv;
 class Shape{
     public:
-
+    double fitness;
+        Mat target;
+    Mat current;
     virtual void draw( Mat  &image) = 0;
     virtual void undo() = 0;
-    virtual void optimize() = 0;
+    virtual void mutate() = 0;
+    void optimize();
 };
 
 
-class Rectangle:public Shape{
+class Rectangle final:public Shape{
     public:
-    Mat target;
-    Mat current;
+
     int maxwidth;
     int maxheight;
-    double fitness;
     Point2f tl;
     Point2f br;
     Point2f prevt;
@@ -31,7 +32,7 @@ class Rectangle:public Shape{
     void draw( Mat  &image);
     void undo();
     void mutate();
-    void optimize();
+    //void optimize();
     void randomize();
     double value();
     inline void updateColor();
@@ -51,7 +52,7 @@ class Rectangle:public Shape{
         this->tl = Point2f(newcoord(gen),newcoord(gen));
         this->br = Point2f(newcoord(gen),newcoord(gen));
         this->draw(current2);
-        this->fitness = norm(target, current2);
+        this->fitness = norm(target, current2, NORM_L2);
         
     };
 };

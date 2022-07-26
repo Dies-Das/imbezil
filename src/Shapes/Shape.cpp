@@ -3,7 +3,7 @@
 #include "Shape.hpp"
 #include <cstdlib>
 using namespace cv;
-double alpha=0.7;
+const double alpha=0.7;
 inline int clamp(double val, int ub){
     return (int)MAX(MIN(val,ub), 0);
 }
@@ -41,18 +41,17 @@ this->updateColor();
 
 }
 
-void Rectangle::optimize(){
+void Shape::optimize(){
     Mat current2;
     bool isOptimal = false;
     int numberoftries;
-    current.copyTo(current2);
-    double val = norm(target, current2);
+
     while(!isOptimal){
         current.copyTo(current2);
         
         this->mutate();
         this->draw(current2);
-        val = norm(target, current2);
+        double val = norm(target, current2, NORM_L2);
         if(val < this->fitness){
             numberoftries = 0;
             this->fitness = val;
@@ -77,5 +76,5 @@ void Rectangle::randomize(){
         this->updateColor();
         this->draw(current2);
 
-        this->fitness = norm(target, current2);
+        this->fitness = norm(target, current2, NORM_L2);
 }

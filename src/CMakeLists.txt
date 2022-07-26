@@ -1,5 +1,6 @@
 
 project( DisplayImage )
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 add_subdirectory(Shapes)
 cmake_policy(SET CMP0003 NEW)
 cmake_policy(SET CMP0081 NEW)
