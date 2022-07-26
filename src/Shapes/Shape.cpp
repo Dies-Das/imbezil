@@ -29,12 +29,12 @@ void Rectangle::mutate(){
     this->prevcl = this->cl;
     which = rand() % 2;
     if (which){
-    this->br.x = clamp(this->d(this->gen), this->maxwidth);
-    this->br.y = clamp(this->d(this->gen), this->maxwidth);
+    this->br.x = clamp(this->d(this->gen)+this->br.x, this->maxwidth-1);
+    this->br.y = clamp(this->d(this->gen)+this->br.y, this->maxwidth-1);
     }
     else{
-    this->tl.x = clamp(this->d(this->gen), this->maxwidth);
-    this->tl.x = clamp(this->d(this->gen), this->maxwidth);
+    this->tl.x = clamp(this->d(this->gen)+this->tl.x, this->maxwidth-1);
+    this->tl.y = clamp(this->d(this->gen)+this->tl.y, this->maxwidth-1);
     }
 this->updateColor();
 
@@ -71,8 +71,8 @@ void Rectangle::randomize(){
         Mat current2;
         current.copyTo(current2);
         std::uniform_int_distribution<> newcoord(0,256);
-        this->tl = Point2f(newcoord(gen),newcoord(gen));
-        this->br = Point2f(newcoord(gen),newcoord(gen));
+        this->tl = Point2f(clamp(newcoord(gen), this->maxwidth),clamp(newcoord(gen), this->maxheight));
+        this->br = Point2f(clamp(newcoord(gen), this->maxwidth),clamp(newcoord(gen), this->maxheight));
         this->updateColor();
         this->draw(current2);
 

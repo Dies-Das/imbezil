@@ -9,6 +9,7 @@ class Shape{
     double fitness;
         Mat target;
     Mat current;
+    Mat * targetint;
     virtual void draw( Mat  &image) = 0;
     virtual void undo() = 0;
     virtual void mutate() = 0;
@@ -19,6 +20,9 @@ class Shape{
     inline friend bool operator>(const Shape& l, const Shape& r){
         return r<l;
     }
+    Shape(Mat * tint){
+        this->targetint = tint;
+    };
 };
 
 
@@ -42,7 +46,8 @@ class Rectangle final:public Shape{
     void randomize();
     double value();
     inline void updateColor();
-    Rectangle( std::random_device &dev, const Mat & target, Mat &current){
+    Rectangle( std::random_device &dev, const Mat & target, Mat &current,Mat * tint):Shape(tint){
+        
             static thread_local std::mt19937  gen{dev()};
     std::normal_distribution<> nor(0, 5);
     std::uniform_int_distribution<> newcoord(0,256);
@@ -50,7 +55,7 @@ class Rectangle final:public Shape{
         current.copyTo(current2);
         this->target = target;
         this->current = current;
-        this->d = d;
+        this->d = nor;
         this->gen = gen;
         auto shape = target.size;
         this->maxwidth = shape[0];
