@@ -16,8 +16,8 @@ struct MyArgs : public argparse::Args
 {
     std::string &src_path = kwarg("i","Input image").set_default("../testtest.png");
     int &n = kwarg("n", "Number of parallel Shape insertions").set_default(16);
-    int &m = kwarg("m", "Number of candidate Shapes ").set_default(2000);
-    int &iter = kwarg("k", "Number of iterations").set_default(200);
+    int &m = kwarg("m", "Number of candidate Shapes ").set_default(200);
+    int &iter = kwarg("k", "Number of iterations").set_default(400);
     int &sh = kwarg("s", "Shape, 1 is Rectangles, 2 is Ellipses").set_default(2);
     std::string &o = kwarg("o", "output file path").set_default("out.png");
 };
@@ -48,10 +48,12 @@ void approx(Mat &target, Mat &current, Mat &targetint, const MyArgs &args, std::
         {
             rects[k].optimize();
         }
+
+/*
         for (auto rect : rects)
         {
             rect.draw(current);
-        }
+        }*/
         //    #pragma omp parallel
 #pragma omp parallel for
         for (int k = 0; k < args.m; k++)

@@ -6,6 +6,7 @@
 using namespace cv;
 class Shape{
     public:
+        Scalar cl;
     double fitness;
         Mat target;
     Mat current;
@@ -35,7 +36,7 @@ class Rectangle final:public Shape{
     Point2f br;
     Point2f prevt;
     Point2f prevb;
-    Scalar cl;
+
     Scalar prevcl;
     std::normal_distribution<> d;
     std::mt19937 gen;

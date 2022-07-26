@@ -2,6 +2,8 @@
 #include "opencv4/opencv2/opencv.hpp"
 #include "Shape.hpp"
 #include <cstdlib>
+#include <omp.h>
+
 using namespace cv;
 const double alpha=0.7;
 inline int clamp(double val, int ub){
@@ -55,6 +57,7 @@ void Shape::optimize(){
         if(val < this->fitness){
             numberoftries = 0;
             this->fitness = val;
+            
         }
         else{
             this->undo();
@@ -66,6 +69,9 @@ void Shape::optimize(){
                 
         }
     }
+            
+    #pragma omp critical
+    this->draw(current);
 }
 void Rectangle::randomize(){
         Mat current2;
