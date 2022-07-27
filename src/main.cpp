@@ -2,6 +2,8 @@
 #include "opencv4/opencv2/opencv.hpp"
 #include "Shape.hpp"
 #include "Ellipse.hpp"
+#include "Triangle.hpp"
+
 #include "argparse.hpp"
 #include <omp.h>
 
@@ -18,7 +20,7 @@ struct MyArgs : public argparse::Args
     int &n = kwarg("n", "Number of parallel Shape insertions").set_default(16);
     int &m = kwarg("m", "Number of candidate Shapes ").set_default(200);
     int &iter = kwarg("k", "Number of iterations").set_default(400);
-    int &sh = kwarg("s", "Shape, 1 is Rectangles, 2 is Ellipses").set_default(2);
+    int &sh = kwarg("s", "Shape, 1 is Rectangles, 2 is Ellipses").set_default(3);
     std::string &o = kwarg("o", "output file path").set_default("out.png");
 };
 
@@ -100,6 +102,8 @@ int main(int argc, char *argv[])
     case 2:
         approx<Ellipse>(image, image2, targetint, args, rd);
         break;
+    case 3:
+        approx<Triangle>(image, image2, targetint, args, rd);
     }
     Mat dst;
     std::cout << norm(image2, image) << std::endl;
