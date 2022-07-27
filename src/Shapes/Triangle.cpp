@@ -3,8 +3,8 @@
 #include "Triangle.hpp"
 #include <cstdlib>
 using namespace cv;
-const double alpha=0.7;
-inline int clamp(double val, int lb, int ub){
+const double alpha=0.5;
+int clamp(double val, int lb, int ub){
     return (int)MAX(MIN(val,ub), lb);
 }
 
@@ -51,9 +51,10 @@ void Triangle::randomize(){
         Mat current2;
         current.copyTo(current2);
         std::uniform_int_distribution<> newcoord(0,255);
-        std::uniform_int_distribution<> newsize(1, 32);
-        for(int k=0; k<3; k++){
-            this->pts[k] = Point(newcoord(gen),newcoord(gen));
+        std::uniform_int_distribution<> next(-16, 17);
+        this->pts[0] = Point(newcoord(gen),newcoord(gen));
+        for(int k=1; k<3; k++){
+            this->pts[k] = Point(clamp(this->pts[0].x+next(gen), 0, 255),clamp(this->pts[0].y+next(gen),0,255));
         }
 
         this->updateColor();
