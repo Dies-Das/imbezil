@@ -53,12 +53,14 @@ void Triangle::randomize()
 {
     Mat current2;
     current.copyTo(current2);
-    std::uniform_int_distribution<> newcoord(0, 255);
+     std::uniform_int_distribution<> newcoordx(0, this->maxwidth);
+    std::uniform_int_distribution<> newcoordy(0, this->maxheight);
+    
     std::uniform_int_distribution<> next(-16, 17);
-    this->pts[0] = Point(newcoord(gen), newcoord(gen));
+    this->pts[0] = Point(newcoordx(gen), newcoordy(gen));
     for (int k = 1; k < 3; k++)
     {
-        this->pts[k] = Point(clamp(this->pts[0].x + next(gen), 0, 255), clamp(this->pts[0].y + next(gen), 0, 255));
+        this->pts[k] = Point(clamp(this->pts[0].x + next(gen), 0, this->maxwidth-1), clamp(this->pts[0].y + next(gen), 0, this->maxheight-1));
     }
 
     this->updateColor();

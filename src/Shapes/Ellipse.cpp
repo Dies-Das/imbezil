@@ -1,4 +1,3 @@
-#pragma once
 
 #include "Ellipse.hpp"
 #include <cstdlib>
@@ -11,18 +10,10 @@ inline int clamp(double val, int lb, int ub)
 
 inline void Ellipse::updateColor()
 {
-    std::vector<Point2d> ellipsepoints;
+     Mat mask = Mat::zeros(this->target.rows, this->target.cols, CV_8U);
+    ellipse(mask, this->center, this->axes, 0, 0, 360, Scalar(1), FILLED);
 
-    int tlx, tly, brx, bry;
-    tlx = clamp(this->center.x - this->axes.width, 0, this->maxwidth);
-    tly = clamp(this->center.y - this->axes.height, 0, this->maxheight);
-    brx = clamp(this->center.x + this->axes.width, 0, this->maxwidth);
-    bry = clamp(this->center.y + this->axes.height, 0, this->maxheight);
-    /*    Mat temp(Size(this->maxwidth, this->maxheight),CV_8UC1);
-        temp = Scalar(0);
-        ellipse(temp,this->center, this->axes, 0, 0, 360, Scalar(255),FILLED);
-        this->cl = mean(Mat(this->target, boundingRect(temp)));*/
-    this->cl = mean(Mat(this->target, Rect(Point2d(tlx, tly), Point2d(brx, bry))));
+    this->cl = mean(this->target, mask);
 }
 void Ellipse::draw(Mat &image)
 {
@@ -67,9 +58,11 @@ void Ellipse::randomize()
 {
     Mat current2;
     current.copyTo(current2);
-    std::uniform_int_distribution<> newcoord(0, 255);
+    std::uniform_int_distribution<> newcoordx(0, this->maxwidth);
+    std::uniform_int_distribution<> newcoordy(0, this->maxheight);
+    
     std::uniform_int_distribution<> newsize(1, 32);
-    this->center = Point2f(newcoord(gen), newcoord(gen));
+    this->center = Point2f(newcoordx(gen), newcoordy(gen));
     this->axes = Size(newsize(gen), newsize(gen));
     this->updateColor();
     this->draw(current2);

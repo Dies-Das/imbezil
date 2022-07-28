@@ -63,8 +63,8 @@ public:
         this->d = nor;
         this->gen = gen;
         auto shape = target.size;
-        this->maxwidth = shape[0];
-        this->maxheight = shape[1];
+        this->maxwidth = shape[1];
+        this->maxheight = shape[0];
         this->tl = Point2f(newcoord(gen), newcoord(gen));
         this->br = Point2f(newcoord(gen), newcoord(gen));
         this->draw(current2);

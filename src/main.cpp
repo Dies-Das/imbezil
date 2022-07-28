@@ -16,11 +16,12 @@
 using namespace cv;
 struct MyArgs : public argparse::Args
 {
-    std::string &src_path = kwarg("i", "Input image").set_default("../testtest.png");
-    int &n = kwarg("n", "Number of parallel Shape insertions").set_default(16);
+    std::string &src_path = kwarg("i", "Input image").set_default("../testtest.jpg");
+    int &n = kwarg("j", "Number of parallel Shape insertions").set_default(8);
     int &m = kwarg("m", "Number of candidate Shapes ").set_default(200);
     int &iter = kwarg("k", "Number of iterations").set_default(400);
     int &sh = kwarg("s", "Shape, 1 is Rectangles, 2 is Ellipses").set_default(3);
+    int &size = kwarg("n", "approximate minimum width of subsampled image").set_default(256);
     std::string &o = kwarg("o", "output file path").set_default("out.png");
 };
 
@@ -45,7 +46,7 @@ void approx(Mat &target, Mat &current, Mat &targetint, const MyArgs &args, std::
     {
         iter++;
 
-#pragma omp parallel for
+//#pragma omp parallel for
         for (int k = 0; k < threads; k++)
         {
             rects[k].optimize();
@@ -57,7 +58,7 @@ void approx(Mat &target, Mat &current, Mat &targetint, const MyArgs &args, std::
                     rect.draw(current);
                 }*/
         //    #pragma omp parallel
-#pragma omp parallel for
+//#pragma omp parallel for
         for (int k = 0; k < args.m; k++)
         {
             tries[k].randomize();
@@ -78,26 +79,26 @@ int main(int argc, char *argv[])
     MyArgs args = argparse::parse<MyArgs>(argc, argv);
     omp_set_num_threads(args.n);
     std::random_device rd{};
-    std::mt19937 gen{rd()};
-    std::normal_distribution<> nor(0, 4);
-    std::uniform_int_distribution<> newcoord(0, 256);
-    int threads = args.n;
+    
+
     Mat image, image2, origimage, targetint;
     origimage = imread(args.src_path);
 
-    resize(origimage, image, Size(256, 256));
+    double scale = MIN((double)origimage.size[0]/args.size,(double)origimage.size[1]/args.size);
+
+    resize(origimage, image, Size(), 1/scale, 1/scale, INTER_AREA);
+    
     image.copyTo(image2);
     integral(image, targetint);
     namedWindow("Display Image", WINDOW_AUTOSIZE);
     auto avg = mean(image);
-    std::cout << image.size << std::endl;
+
     image2.setTo(Scalar(avg));
-    std::cout << "Type is: " << args.sh << std::endl;
+
     switch (args.sh)
     {
     case 1:
         approx<Rectangle>(image, image2, targetint, args, rd);
-        std::cout << "doing rects for some reason??" << std::endl;
         break;
     case 2:
         approx<Ellipse>(image, image2, targetint, args, rd);
@@ -106,8 +107,9 @@ int main(int argc, char *argv[])
         approx<Triangle>(image, image2, targetint, args, rd);
     }
     Mat dst;
-    std::cout << norm(image2, image) << std::endl;
-    resize(image2, dst, Size(), 4, 4, INTER_CUBIC);
+
+    resize(image2, dst, Size(), scale, scale, INTER_CUBIC);
+
     imwrite(args.o, image2);
     namedWindow("Display Image", WINDOW_AUTOSIZE);
     imshow("Display Image", dst);

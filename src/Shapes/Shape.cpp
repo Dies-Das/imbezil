@@ -12,7 +12,10 @@ inline int clamp(double val, int ub)
 }
 inline void Rectangle::updateColor()
 {
-    this->cl = mean(Mat(this->target, Rect(this->tl, this->br)));
+    Mat mask = Mat::zeros(this->target.rows, this->target.cols, CV_8U);
+    rectangle(mask, this->tl, this->br, Scalar(1), FILLED);
+
+    this->cl = mean(this->target, mask);
 }
 void Rectangle::draw(Mat &image)
 {
@@ -84,9 +87,11 @@ void Rectangle::randomize()
 {
     Mat current2;
     current.copyTo(current2);
-    std::uniform_int_distribution<> newcoord(0, 256);
-    this->tl = Point2f(clamp(newcoord(gen), this->maxwidth), clamp(newcoord(gen), this->maxheight));
-    this->br = Point2f(clamp(newcoord(gen), this->maxwidth), clamp(newcoord(gen), this->maxheight));
+    std::uniform_int_distribution<> newcoordx(0, this->maxwidth);
+    std::uniform_int_distribution<> newcoordy(0, this->maxheight);
+    
+    this->tl = Point2f(clamp(newcoordx(gen), this->maxwidth-1), clamp(newcoordy(gen), this->maxheight-1));
+    this->br = Point2f(clamp(newcoordx(gen), this->maxwidth-1), clamp(newcoordy(gen), this->maxheight-1));
     this->updateColor();
     this->draw(current2);
 
