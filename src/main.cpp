@@ -16,7 +16,7 @@
 using namespace cv;
 struct MyArgs : public argparse::Args
 {
-    std::string &src_path = kwarg("i","Input image").set_default("../testtest.png");
+    std::string &src_path = kwarg("i", "Input image").set_default("../testtest.png");
     int &n = kwarg("n", "Number of parallel Shape insertions").set_default(16);
     int &m = kwarg("m", "Number of candidate Shapes ").set_default(200);
     int &iter = kwarg("k", "Number of iterations").set_default(400);
@@ -51,11 +51,11 @@ void approx(Mat &target, Mat &current, Mat &targetint, const MyArgs &args, std::
             rects[k].optimize();
         }
 
-/*
-        for (auto rect : rects)
-        {
-            rect.draw(current);
-        }*/
+        /*
+                for (auto rect : rects)
+                {
+                    rect.draw(current);
+                }*/
         //    #pragma omp parallel
 #pragma omp parallel for
         for (int k = 0; k < args.m; k++)
@@ -108,6 +108,7 @@ int main(int argc, char *argv[])
     Mat dst;
     std::cout << norm(image2, image) << std::endl;
     resize(image2, dst, Size(), 4, 4, INTER_CUBIC);
+    imwrite(args.o, image2);
     namedWindow("Display Image", WINDOW_AUTOSIZE);
     imshow("Display Image", dst);
     waitKey(0);
