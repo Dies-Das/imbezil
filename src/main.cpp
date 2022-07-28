@@ -46,7 +46,7 @@ void approx(Mat &target, Mat &current, Mat &targetint, const MyArgs &args, std::
     {
         iter++;
 
-//#pragma omp parallel for
+#pragma omp parallel for
         for (int k = 0; k < threads; k++)
         {
             rects[k].optimize();
@@ -58,7 +58,7 @@ void approx(Mat &target, Mat &current, Mat &targetint, const MyArgs &args, std::
                     rect.draw(current);
                 }*/
         //    #pragma omp parallel
-//#pragma omp parallel for
+#pragma omp parallel for
         for (int k = 0; k < args.m; k++)
         {
             tries[k].randomize();
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
     
     image.copyTo(image2);
     integral(image, targetint);
-    namedWindow("Display Image", WINDOW_AUTOSIZE);
+
     auto avg = mean(image);
 
     image2.setTo(Scalar(avg));
@@ -110,9 +110,7 @@ int main(int argc, char *argv[])
 
     resize(image2, dst, Size(), scale, scale, INTER_CUBIC);
 
-    imwrite(args.o, image2);
-    namedWindow("Display Image", WINDOW_AUTOSIZE);
-    imshow("Display Image", dst);
-    waitKey(0);
+    imwrite(args.o, dst);
+
     return 0;
 }
