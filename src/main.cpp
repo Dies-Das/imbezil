@@ -77,7 +77,7 @@ void approx(Mat &target, Mat &current, Mat &targetint, const MyArgs &args, std::
 int main(int argc, char *argv[])
 {
     MyArgs args = argparse::parse<MyArgs>(argc, argv);
-    omp_set_num_threads(args.n);
+    omp_set_num_threads(16);
     std::random_device rd{};
     
 
