@@ -1,12 +1,13 @@
 
 #include "opencv4/opencv2/opencv.hpp"
+#include <omp.h>
 #include "Shape.hpp"
-#include "Ellipse.hpp"
+#include "Line.hpp"
 #include "Triangle.hpp"
+#include "Ellipse.hpp"
+#include "Quadratic.hpp"
 
 #include "argparse.hpp"
-#include <omp.h>
-
 #include <cmath>
 #include <initializer_list>
 
@@ -16,11 +17,11 @@
 using namespace cv;
 struct MyArgs : public argparse::Args
 {
-    std::string &src_path = kwarg("i", "Input image").set_default("../testtest.jpg");
+    std::string &src_path = kwarg("i", "Input image").set_default("../testtest.png");
     int &n = kwarg("j", "Number of parallel Shape insertions").set_default(8);
     int &m = kwarg("m", "Number of candidate Shapes ").set_default(200);
-    int &iter = kwarg("k", "Number of iterations").set_default(400);
-    int &sh = kwarg("s", "Shape, 1 is Rectangles, 2 is Ellipses").set_default(3);
+    int &iter = kwarg("k", "Number of iterations").set_default(100);
+    int &sh = kwarg("s", "Shape, 1 is Rectangles, 2 is Ellipses").set_default(5);
     int &size = kwarg("n", "approximate minimum width of subsampled image").set_default(256);
     std::string &o = kwarg("o", "output file path").set_default("out.png");
 };
@@ -78,7 +79,7 @@ int main(int argc, char *argv[])
 {
     MyArgs args = argparse::parse<MyArgs>(argc, argv);
     omp_set_num_threads(args.n);
-    std::random_device rd{};
+    std::random_device rd{ };
     
 
     Mat image, image2, origimage, targetint;
@@ -105,6 +106,14 @@ int main(int argc, char *argv[])
         break;
     case 3:
         approx<Triangle>(image, image2, targetint, args, rd);
+        break;
+    
+    case 4:
+        approx<MyLine>(image, image2, targetint, args, rd);
+        break;
+        case 5:
+        approx<Bezier>(image, image2, targetint, args, rd);
+        break;
     }
     Mat dst;
 

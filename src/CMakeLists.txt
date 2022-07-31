@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 project( imbezil )
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+#set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 add_subdirectory(Shapes)
 cmake_policy(SET CMP0003 NEW)
 cmake_policy(SET CMP0081 NEW)

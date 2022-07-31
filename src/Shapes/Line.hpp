@@ -1,12 +1,14 @@
 #include "Shape.hpp"
-
-class Triangle final : public Shape
+//int CLAMP(double val, int lb, int ub);
+class MyLine final : public Shape
 {
 public:
     int maxwidth;
     int maxheight;
     std::array<Point, 3> pts;
     std::array<Point, 3> prevpts;
+    std::array<Point, 100> polypoints;
+    std::array<Point, 100> prevpoly;
 
     Scalar prevcl;
     std::normal_distribution<> d;
@@ -19,10 +21,12 @@ public:
     void randomize();
     double value();
     inline void updateColor();
-    Triangle(std::random_device &dev, const Mat &target, Mat &current, Mat *tint) : Shape(tint)
+    void eval();
+    MyLine(std::random_device &dev, const Mat &target, Mat &current, Mat *tint) : Shape(tint)
     {
 
         static thread_local std::mt19937 gen{dev()};
+        gen.seed(time(NULL));
         std::normal_distribution<> nor(0, 16);
     std::uniform_int_distribution<> newcoordx(0, this->maxwidth);
     std::uniform_int_distribution<> newcoordy(0, this->maxheight);
@@ -42,6 +46,7 @@ public:
         {
             this->pts[k] = Point(CLAMP(this->pts[0].x + next(gen), 0, this->maxwidth-1), CLAMP(this->pts[0].y + next(gen), 0, this->maxheight-1));
         }
+        this->eval();
         this->draw(current2);
         this->fitness = norm(target, current2, NORM_L2);
     };

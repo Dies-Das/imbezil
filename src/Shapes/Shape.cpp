@@ -6,10 +6,7 @@
 
 using namespace cv;
 const double alpha = 0.7;
-inline int clamp(double val, int ub)
-{
-    return (int)MAX(MIN(val, ub), 0);
-}
+
 inline void Rectangle::updateColor()
 {
     Mat mask = Mat::zeros(this->target.rows, this->target.cols, CV_8U);
@@ -39,13 +36,13 @@ void Rectangle::mutate()
     which = rand() % 2;
     if (which)
     {
-        this->br.x = clamp(this->d(this->gen) + this->br.x, this->maxwidth - 1);
-        this->br.y = clamp(this->d(this->gen) + this->br.y, this->maxwidth - 1);
+        this->br.x = CLAMP2(this->d(this->gen) + this->br.x, this->maxwidth - 1);
+        this->br.y = CLAMP2(this->d(this->gen) + this->br.y, this->maxwidth - 1);
     }
     else
     {
-        this->tl.x = clamp(this->d(this->gen) + this->tl.x, this->maxwidth - 1);
-        this->tl.y = clamp(this->d(this->gen) + this->tl.y, this->maxwidth - 1);
+        this->tl.x = CLAMP2(this->d(this->gen) + this->tl.x, this->maxwidth - 1);
+        this->tl.y = CLAMP2(this->d(this->gen) + this->tl.y, this->maxwidth - 1);
     }
     this->updateColor();
 }
@@ -72,7 +69,7 @@ void Shape::optimize()
         {
             this->undo();
             numberoftries++;
-            if (numberoftries > 10)
+            if (numberoftries > 20)
             {
                 isOptimal = true;
                 break;
@@ -90,8 +87,8 @@ void Rectangle::randomize()
     std::uniform_int_distribution<> newcoordx(0, this->maxwidth);
     std::uniform_int_distribution<> newcoordy(0, this->maxheight);
     
-    this->tl = Point2f(clamp(newcoordx(gen), this->maxwidth-1), clamp(newcoordy(gen), this->maxheight-1));
-    this->br = Point2f(clamp(newcoordx(gen), this->maxwidth-1), clamp(newcoordy(gen), this->maxheight-1));
+    this->tl = Point2f(CLAMP2(newcoordx(gen), this->maxwidth-1), CLAMP2(newcoordy(gen), this->maxheight-1));
+    this->br = Point2f(CLAMP2(newcoordx(gen), this->maxwidth-1), CLAMP2(newcoordy(gen), this->maxheight-1));
     this->updateColor();
     this->draw(current2);
 

@@ -1,2 +1,6 @@
-build/
+.idea/
 .vscode/
+build/
+__pycache__/
+*.py 
+*.png

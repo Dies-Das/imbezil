@@ -3,10 +3,6 @@
 #include <cstdlib>
 using namespace cv;
 const double alpha = 0.7;
-inline int clamp(double val, int lb, int ub)
-{
-    return (int)MAX(MIN(val, ub), lb);
-}
 
 inline void Ellipse::updateColor()
 {
@@ -44,8 +40,8 @@ void Ellipse::mutate()
     which = rand() % 2;
     if (which)
     {
-        this->center.x = clamp(this->d(this->gen) + this->center.x, 1, this->maxwidth - 1);
-        this->center.y = clamp(this->d(this->gen) + this->center.y, 1, this->maxheight - 1);
+        this->center.x = CLAMP(this->d(this->gen) + this->center.x, 1, this->maxwidth - 1);
+        this->center.y = CLAMP(this->d(this->gen) + this->center.y, 1, this->maxheight - 1);
     }
     else
     {
