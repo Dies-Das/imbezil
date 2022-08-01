@@ -21,7 +21,7 @@ struct MyArgs : public argparse::Args
     int &n = kwarg("j", "Number of parallel Shape insertions").set_default(8);
     int &m = kwarg("m", "Number of candidate Shapes ").set_default(200);
     int &iter = kwarg("k", "Number of iterations").set_default(100);
-    int &sh = kwarg("s", "Shape, 1 is Rectangles, 2 is Ellipses").set_default(5);
+    int &sh = kwarg("s", "Shape, 1 is Rectangles, 2 is Ellipses").set_default(4);
     int &size = kwarg("n", "approximate minimum width of subsampled image").set_default(256);
     std::string &o = kwarg("o", "output file path").set_default("out.png");
 };
@@ -32,7 +32,7 @@ void approx(Mat &target, Mat &current, Mat &targetint, const MyArgs &args, std::
     std::vector<T> rects;
     std::vector<T> tries;
     auto threads = args.n;
-    int iter = 0;
+
     for (int k = 0; k < args.m; k++)
     {
 
@@ -45,7 +45,7 @@ void approx(Mat &target, Mat &current, Mat &targetint, const MyArgs &args, std::
     }
     for (int j = 0; j < args.iter; j++)
     {
-        iter++;
+
 
 #pragma omp parallel for
         for (int k = 0; k < threads; k++)
@@ -65,9 +65,6 @@ void approx(Mat &target, Mat &current, Mat &targetint, const MyArgs &args, std::
             tries[k].randomize();
         }
         std::sort(std::begin(tries), std::end(tries));
-        for (auto rec : tries)
-        {
-        }
 
         for (int k = 0; k < threads; k++)
         {

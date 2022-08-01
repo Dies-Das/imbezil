@@ -11,8 +11,9 @@ public:
     std::array<Point, 100> prevpoly;
 
     Scalar prevcl;
+    std::mt19937_64 gen;
+
     std::normal_distribution<> d;
-    std::mt19937 gen;
 
     void draw(Mat &image);
     void undo();
@@ -25,8 +26,8 @@ public:
     MyLine(std::random_device &dev, const Mat &target, Mat &current, Mat *tint) : Shape(tint)
     {
 
-        static thread_local std::mt19937 gen{dev()};
-        gen.seed(time(NULL));
+        static thread_local std::mt19937_64 gen{dev()};
+                this->gen = gen;
         std::normal_distribution<> nor(0, 16);
     std::uniform_int_distribution<> newcoordx(0, this->maxwidth);
     std::uniform_int_distribution<> newcoordy(0, this->maxheight);
@@ -36,15 +37,17 @@ public:
         this->target = target;
         this->current = current;
         this->d = nor;
-        this->gen = gen;
+
         auto shape = target.size;
         this->maxwidth = shape[1];
         this->maxheight = shape[0];
         std::uniform_int_distribution<> next(-16, 17);
-        this->pts[0] = Point(newcoordx(gen), newcoordy(gen));
+        auto p1x = newcoordx(this->gen);
+        auto p2x = newcoordx(this->gen);
+        this->pts[0] = Point(p1x, p2x);
         for (int k = 1; k < 3; k++)
         {
-            this->pts[k] = Point(CLAMP(this->pts[0].x + next(gen), 0, this->maxwidth-1), CLAMP(this->pts[0].y + next(gen), 0, this->maxheight-1));
+            this->pts[k] = Point(CLAMP(this->pts[0].x + next(this->gen), 0, this->maxwidth-1), CLAMP(this->pts[0].y + next(this->gen), 0, this->maxheight-1));
         }
         this->eval();
         this->draw(current2);

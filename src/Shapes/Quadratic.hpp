@@ -12,7 +12,7 @@ public:
 
     Scalar prevcl;
     std::normal_distribution<> d;
-    std::mt19937 gen;
+    std::mt19937_64 gen;
 
     void draw(Mat &image);
     void undo();
@@ -25,8 +25,8 @@ public:
     Bezier(std::random_device &dev, const Mat &target, Mat &current, Mat *tint) : Shape(tint)
     {
 
-        static thread_local std::mt19937 gen{dev()};
-        gen.seed(time(NULL));
+        static thread_local std::mt19937_64 gen{dev()};
+
         std::normal_distribution<> nor(0, 16);
     std::uniform_int_distribution<> newcoordx(0, this->maxwidth);
     std::uniform_int_distribution<> newcoordy(0, this->maxheight);
