@@ -3,10 +3,15 @@
 #include <iostream>
 #include <random>
 #include <cmath>
+#define CLAMP(val, lb, ub) MAX(MIN(val, ub), lb)
+#define CLAMP2(val, ub) MAX(MIN(val, ub), 0)
+
 using namespace cv;
 class Shape
 {
 public:
+
+
     Scalar cl;
     double fitness;
     Mat target;
