@@ -1,4 +1,4 @@
-#pragma once
+
 #include "opencv4/opencv2/opencv.hpp"
 #include "Shape.hpp"
 #include <cstdlib>
@@ -51,7 +51,7 @@ void Shape::optimize()
 {
     Mat current2;
     bool isOptimal = false;
-    int numberoftries;
+    int numberoftries=0;
 
     while (!isOptimal)
     {

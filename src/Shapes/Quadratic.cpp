@@ -1,4 +1,4 @@
-#pragma once
+
 #include "opencv4/opencv2/imgproc.hpp"
 #include "Quadratic.hpp"
 #include <cstdlib>
@@ -66,10 +66,11 @@ void Bezier::randomize()
     std::uniform_int_distribution<> newcoordy(0, this->maxheight);
     
     std::uniform_int_distribution<> next(-16, 17);
-        for (int k = 0; k < 3; k++)
+    this->pts[0] = Point(newcoordx(gen), newcoordy(gen));
+        for (int k = 1; k < 3; k++)
         {
-            //this->pts[k] = Point(CLAMP(this->pts[0].x + next(gen), 0, this->maxwidth-1), CLAMP(this->pts[0].y + next(gen), 0, this->maxheight-1));
-            this->pts[k] = Point(newcoordx(gen), newcoordy(gen));
+            this->pts[k] = Point(CLAMP(this->pts[0].x + next(gen), 0, this->maxwidth-1), CLAMP(this->pts[0].y + next(gen), 0, this->maxheight-1));
+            //this->pts[k] = Point(newcoordx(gen), newcoordy(gen));
         }
     this->eval();
     this->updateColor();
@@ -79,9 +80,9 @@ void Bezier::randomize()
 }
 
 void Bezier::eval(){
-    double step = 1.0/49.0;
+    double step = 1.0/29.0;
     #pragma omp simd
-    for(int k=0; k<50; k++){
+    for(int k=0; k<30; k++){
 
         this->polypoints[k].x = this->pts[1].x+((1-step*k)*(1-step*k)*(this->pts[0].x-this->pts[1].x))+step*step*k*k*(this->pts[2].x-this->pts[1].x);
          this->polypoints[k].y = this->pts[1].y+((1-step*k)*(1-step*k)*(this->pts[0].y-this->pts[1].y))+step*step*k*k*(this->pts[2].y-this->pts[1].y);

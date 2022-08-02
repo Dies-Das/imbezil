@@ -7,8 +7,8 @@ public:
     int maxheight;
     std::array<Point, 3> pts;
     std::array<Point, 3> prevpts;
-    std::array<Point, 50> polypoints;
-    std::array<Point, 50> prevpoly;
+    std::array<Point, 30> polypoints;
+    std::array<Point, 30> prevpoly;
 
     Scalar prevcl;
     std::normal_distribution<> d;

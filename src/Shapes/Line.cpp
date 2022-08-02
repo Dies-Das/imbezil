@@ -1,4 +1,4 @@
-#pragma once
+
 #include "opencv4/opencv2/imgproc.hpp"
 #include "Line.hpp"
 #include <cstdlib>
